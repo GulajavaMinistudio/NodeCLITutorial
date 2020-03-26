@@ -1,5 +1,5 @@
 {
-    "name": "pesanrahasia",
+    "name": "nodecli",
     "version": "1.0.0",
     "description": "Latihan Colt Steele dengan html dan struktur terpisah. Latihan untuk mengerjakan soal Udemy Course dari Colt Steele dan Stephen Grider https://www.udemy.com/course/javascript-beginners-complete-tutorial/",
     "main": "app.js",
