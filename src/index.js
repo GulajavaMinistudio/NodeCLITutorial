@@ -42,6 +42,8 @@ console.log('counter instance baru', newCounterObject.getCounter());
  * Jalankan node --inspect index.js
  * Menjalankan debugger interaktif dengan bantuan Chrome browser
  * Buka Chrome dan akses chrome://inspect
+ *
  * Atau bisa juga dengan jalankan node --inspect-brk index.js
  * Untuk menjalankan debugger di Chrome dan memasang break point di dalamnya
+ * Tidak langsung berjalan sampai selesai, tetapi berjalan langkah demi langkah
  */

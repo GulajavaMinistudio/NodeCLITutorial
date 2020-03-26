@@ -7,7 +7,8 @@
         "start": "nodemon src/index.js localhost 8080",
         "dev": "parcel -p 4200 src/index.html",
         "build": "parcel build src/index.html --no-source-maps",
-        "deploygithub": "parcel build src/index.html --no-source-maps --public-url /pesan-rahasia/"
+        "deploygithub": "parcel build src/index.html --no-source-maps --public-url /pesan-rahasia/",
+        "debugrun": "node --inspect-brk src/lists/applist.js"
     },
     "author": "Gulajava",
     "license": "MIT",
