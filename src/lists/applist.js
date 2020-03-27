@@ -1,7 +1,9 @@
-#!/usr/bin/env node
+// #!/usr/bin/env node
 // Perlu Hash bang karena di registrasikan di package json /bin
 const fs = require('fs');
 const util = require('util');
+const chalk = require('chalk');
+const path = require('path');
 
 // lstat diubah menjadi promise
 // Metode kedua #2
@@ -202,17 +204,20 @@ async function readDirAsyncs() {
 // readDirAsyncs();
 
 async function readDirPromiseAll() {
+    const targetDir = process.argv[2] || process.cwd();
+
     let arrFileName = [];
     let arrPromiseLstat = [];
     let arrStatResult = [];
     try {
-        arrFileName = await promises.readdir(process.cwd(), {
+        arrFileName = await promises.readdir(targetDir, {
             encoding: 'utf-8',
             withFileTypes: true,
         });
 
         arrPromiseLstat = arrFileName.map(filename => {
-            return lstat(filename.name);
+            const joinPath = path.join(targetDir, filename.name);
+            return lstat(joinPath);
         });
 
         arrStatResult = await Promise.allSettled(arrPromiseLstat);
@@ -226,9 +231,17 @@ async function readDirPromiseAll() {
                 const statsFile = resultprom.value;
                 const isBentukFile = statsFile.isFile();
                 const filename = arrFileName[index];
-                console.log(filename.name, isBentukFile);
+
+                if (isBentukFile) {
+                    console.log(filename.name);
+                } else {
+                    console.log(chalk.green(filename.name));
+                }
+                // console.log(filename.name, isBentukFile);
             }
         });
+    } else {
+        console.log('Tidak ada folder di dalamnya');
     }
 }
 
