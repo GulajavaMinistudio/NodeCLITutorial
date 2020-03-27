@@ -8,12 +8,16 @@
         "dev": "parcel -p 4200 src/index.html",
         "build": "parcel build src/index.html --no-source-maps",
         "deploygithub": "parcel build src/index.html --no-source-maps --public-url /pesan-rahasia/",
-        "debugrun": "node --inspect-brk src/lists/applist.js"
+        "debugrun": "node --inspect-brk src/lists/applist.js",
+        "runnode": "node src/lists/applist.js"
+    },
+    "bin": {
+        "nls": "src/lists/applist.js"
     },
     "author": "Gulajava",
     "license": "MIT",
     "engines": {
-        "node": ">=12.0.0"
+        "node": ">=12.9.0"
     },
     "nodemonConfig": {
         "ignore": [
