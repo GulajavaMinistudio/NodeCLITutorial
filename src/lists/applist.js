@@ -1,9 +1,16 @@
 #!/usr/bin/env node
 // Perlu Hash bang karena di registrasikan di package json /bin
 const fs = require('fs');
+const util = require('util');
+
+// lstat diubah menjadi promise
+// Metode kedua #2
+const lstatprom = util.promisify(fs.lstat);
 
 // Gunakan promises untuk async proses
+// Metode ketiga #3
 const { promises } = fs;
+const { lstat } = fs.promises;
 
 // fs.readdir('.', { encoding: 'utf-8', withFileTypes: true }, (err, files) => {
 //     if (err) {
@@ -72,6 +79,76 @@ function cekFolderPromiseAllSettled(filenamesArr) {
         });
 }
 
+// Metode dengan callback untuk pengecekan isFile dengan lstat
+function cekFolderAllstatCallback(arrfilename) {
+    const allStats = Array(arrfilename.length).fill(null);
+
+    // eslint-disable-next-line no-restricted-syntax
+    for (const filename of arrfilename) {
+        const indexs = arrfilename.indexOf(filename);
+        promises
+            .lstat(filename.name)
+            .then(resStats => {
+                allStats[indexs] = resStats;
+
+                const isReady = allStats.every(stats => {
+                    return stats;
+                });
+
+                // Jika semua sudah tidak bernilai null lanjutkan langkah berikutnya
+                if (isReady) {
+                    allStats.forEach((statvalue, index) => {
+                        const nameFile = arrfilename[index].name;
+                        console.log(nameFile, statvalue.isFile());
+                    });
+                }
+            })
+            .catch(err => {
+                console.log(err);
+            });
+    }
+}
+
+function getLstatPromise(filename) {
+    return new Promise((resolve, reject) => {
+        fs.lstat(filename.name, (err, stats) => {
+            if (err) {
+                reject(err);
+            } else {
+                resolve(stats);
+            }
+        });
+    });
+}
+
+function cekFolderLStatPromisied(arrfilename) {
+    const allStats = Array(arrfilename.length).fill(null);
+
+    // eslint-disable-next-line no-restricted-syntax
+    for (const filename of arrfilename) {
+        const indexs = arrfilename.indexOf(filename);
+        lstatprom(filename.name)
+            .then(resStats => {
+                allStats[indexs] = resStats;
+
+                const isReady = allStats.every(stats => {
+                    return stats;
+                });
+
+                // Jika semua sudah tidak bernilai null lanjutkan langkah berikutnya
+                if (isReady) {
+                    allStats.forEach((statvalue, index) => {
+                        const nameFile = arrfilename[index].name;
+                        console.log(nameFile, statvalue.isFile());
+                    });
+                }
+            })
+            .catch(err => {
+                console.log(err);
+            });
+    }
+}
+
 // process.cwd untuk menampilkan kondisi directory sekarang
 // atau cwd = current working directory
 // Eksekusi dengan chmod +x index.js
@@ -80,11 +157,79 @@ function readDirektoriFolder() {
         .readdir(process.cwd(), { encoding: 'utf-8', withFileTypes: true })
         .then(valuesFilename => {
             // cekFolderPromiseRace(valuesFilename);
-            cekFolderPromiseAllSettled(valuesFilename);
+            // cekFolderAllstatCallback(valuesFilename);
+            // cekFolderPromiseAllSettled(valuesFilename);
+            cekFolderLStatPromisied(valuesFilename);
         })
         .catch(err => {
             console.log(err);
         });
 }
 
-readDirektoriFolder();
+// readDirektoriFolder();
+
+// Dengan async await dan paralel eksekusi
+async function readDirAsyncs() {
+    let arrFileName = [];
+    const arrPromiseLstat = [];
+    try {
+        arrFileName = await promises.readdir(process.cwd(), {
+            encoding: 'utf-8',
+            withFileTypes: true,
+        });
+        // eslint-disable-next-line no-restricted-syntax
+        for (const filename of arrFileName) {
+            arrPromiseLstat.push(lstat(filename.name));
+        }
+    } catch (err) {
+        console.log(err);
+    }
+
+    if (arrPromiseLstat && arrFileName) {
+        const resultLstat = await Promise.allSettled(arrPromiseLstat);
+        // eslint-disable-next-line no-restricted-syntax
+        for (let i = 0; i < resultLstat.length; i += 1) {
+            const result = resultLstat[i];
+            if (result.status === 'fulfilled') {
+                const isFileNama = result.value.isFile();
+                const namaFile = arrFileName[i].name;
+                console.log(namaFile, isFileNama);
+            }
+        }
+    }
+}
+
+// readDirAsyncs();
+
+async function readDirPromiseAll() {
+    let arrFileName = [];
+    let arrPromiseLstat = [];
+    let arrStatResult = [];
+    try {
+        arrFileName = await promises.readdir(process.cwd(), {
+            encoding: 'utf-8',
+            withFileTypes: true,
+        });
+
+        arrPromiseLstat = arrFileName.map(filename => {
+            return lstat(filename.name);
+        });
+
+        arrStatResult = await Promise.allSettled(arrPromiseLstat);
+    } catch (err) {
+        console.log(err);
+    }
+
+    if (arrStatResult.length > 0) {
+        arrStatResult.forEach((resultprom, index) => {
+            if (resultprom.status === 'fulfilled') {
+                const statsFile = resultprom.value;
+                const isBentukFile = statsFile.isFile();
+                const filename = arrFileName[index];
+                console.log(filename.name, isBentukFile);
+            }
+        });
+    }
+}
+
+readDirPromiseAll();
