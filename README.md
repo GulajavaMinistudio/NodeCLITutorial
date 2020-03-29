@@ -1,10 +1,6 @@
-# Pesan Rahasia
+# Node CLI LS Command
 
-Aplikasi berkirim pesan secara rahasia dari course Udemy Colt Steele dan Stephen Grider. Url kelasnya [Colt Steele Stephen Grider](https://www.udemy.com/course/javascript-beginners-complete-tutorial/).
-
-## Demo aplikasi
-
-Tautan untuk melihat demo sederhana dari penggunaan aplikasi web ini yaitu [Demo Pesan Rahasia](https://html-css-eksperimen.github.io/pesan-rahasia/).
+Aplikasi membaca isi folder dan file dari course Udemy Colt Steele dan Stephen Grider. Url kelasnya [Colt Steele Stephen Grider](https://www.udemy.com/course/javascript-beginners-complete-tutorial/).
 
 ## Cara Menjalankan Demo
 
@@ -13,11 +9,14 @@ Gunakan NPM dari Node JS untuk memasang dependency http server untuk menjalankan
 ```sh
 npm install
 
-npm run dev
+npm link
+
+# Ketik nls untuk menampilkan isi folder dengan node tools
+nls /yourfolder
 ```
 
-Kemudian buka halaman localhost :
+Kemudian buka Terminal dan ketikan :
 
 ```sh
-http://localhost:4200/
+nls /folder-direktori tes
 ```
